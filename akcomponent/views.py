@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from akuna.component import query_component
 
 import logging
-logger = logging.getLogger('akcomponents')
+logger = logging.getLogger('akcomponent')
 
 
 class ComponentDetailView(DetailView):
