@@ -138,8 +138,8 @@ class ComponentDeleteView(DeleteView):
         delete_factory = None
         if content_type_name:
             delete_factory = query_component('DeleteFactory', name=content_type_name)
-            if not delete_factory:
-                delete_factory = query_component('DeleteFactory')
+        if not delete_factory:
+            delete_factory = query_component('DeleteFactory')
 
         if delete_factory:
             logger.debug('Delete factory: %s' % str(delete_factory))
