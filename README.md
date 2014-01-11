@@ -1,12 +1,12 @@
 django-akuna-components
 =======================
 
-Django Detail, Create, Update and Delete component based views. They extend the generic Django Class Based Views preserving the existing functionality but adding hooks for components like forms and factories.  
+Django Detail, Create, Update and Delete component based views. They extend the generic Django Class Based Views preserving the existing functionality but adding hooks for component like forms and factories.  
 
 ComponentCreateView
 -------------------
 
-    from akcomponent.views import ComponentCreateView 
+    from akcomponent.views import ComponentCreateView
 
     class MyCreateView(ComponentCreateView):
         # could add generic django Create CBV stuff here 
@@ -17,6 +17,8 @@ As with standard django class based views, use as_view() to initialise the view,
 
     view_func = MyCreateView.as_view(content_type=<content type obj>, **kwargs)
     return view_func(request)
+
+(Instead of ContentType instance, could pass content_type_name='<app label>.<lower case model name>' to the as_view func.)
 
 ### Forms
 
@@ -30,14 +32,14 @@ To customise MyCreateView, create and register a 'FormClass' component:
 
     from akuna.component import register_component 
 
-    # register component for the customer content type 
-    # name (<app label>.<lowercase model name>)  
+    # register component for the customer content type name (<app label>.<lowercase model name>)  
     register_component(CustomerForm, is_a='FormClass', name='myapp.customer')
 
 
-Now any time MyCreateView.as_view is called with the Customer ContentType instance, CustomerForm class will be used.  If MyCreateView called with a content type for which we don't have a specific form registered, processing will fall back as per standard django create view.  Or could create a generic form catching other content types.
+Now any time MyCreateView.as_view is called passing in the Customer content type, CustomerForm class will be used.  If MyCreateView is called with a content type other than Customer, processing will fall back as per standard django create view.  Or could create a generic form catching other content types:
 
     class GenericForm(forms.Form):
+        # some generic form stuff here
         pass
 
     # register form without the name
