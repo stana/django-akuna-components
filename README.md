@@ -6,16 +6,19 @@ Django Detail, Create, Update and Delete component based views. They extend the 
 ComponentCreateView
 -------------------
 
+ComponentCreateView extends django's generic CreateView providing hooks for ContentType specific forms and content create factories.
+
+
     from akcomponent.views import ComponentCreateView
 
     class MyCreateView(ComponentCreateView):
-        # could add generic django Create CBV stuff here 
+        # could add generic django CBV CreateView stuff here 
         pass
 
   
 As with standard django class based views, use as_view() to initialise the view, passing in the ContentType instance of the object being created.
 
-    view_func = MyCreateView.as_view(content_type=<content type obj>, **kwargs)
+    view_func = MyCreateView.as_view(content_type=<ContentType instance>, **kwargs)
     return view_func(request)
 
 (Instead of ContentType instance, could pass content_type_name='<app label>.<lower case model name>' to the as_view func.)
@@ -80,6 +83,21 @@ If no 'CreateFactory' defined, generic django CBV CreateView form_valid() method
 ComponentUpdateView
 -------------------
 
+ComponentUpdateView extends django's generic UpdateView providing hooks for ContentType specific forms and content update factories.
+
+    from akcomponent.views import ComponentUpdateView
+
+    class MyUpdateView(ComponentUpdateView):
+        # could add generic django CBV UpdateView stuff here 
+        pass
+
+  
+As with standard django class based views, use as_view() to initialise the view, passing in the content object being updated.
+
+    view_func = MyUpdateView.as_view(content_object=<content object>, **kwargs)
+    return view_func(request)
+
+
 ### Update Factories
 
 Similar to create factories above with the difference of update factory components receiving content object being updated as one of the arguments.
@@ -107,6 +125,21 @@ If no 'UpdateFactory' defined, generic django CBV UpdateView form_valid() method
 
 ComponentDeleteView
 -------------------
+
+ComponentDeleteView extends django's generic DeleteView providing hooks for ContentType specific delete factories.
+
+    from akcomponent.views import ComponentDeleteView
+
+    class MyDeleteView(ComponentDeleteView):
+        # could add generic django CBV DeleteView stuff here
+        pass
+
+  
+As with standard django class based views, use as_view() to initialise the view, passing in the content object being deleted.
+
+    view_func = MyDeleteView.as_view(content_object=<content object>, **kwargs)
+    return view_func(request)
+
 
 ### Delete Factories
 
