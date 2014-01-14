@@ -1,7 +1,7 @@
 django-akuna-components
 =======================
 
-Django Detail, Create, Update and Delete component based views. They extend the generic Django Class Based Views preserving the existing functionality but adding hooks for component like forms and factories.  
+Django Detail, Create, Update and Delete component based views. They extend the generic Django Class Based Views preserving the existing functionality but adding hooks for components like forms and factories.  
 
 ComponentCreateView
 -------------------
@@ -36,7 +36,9 @@ To customise MyCreateView, create and register a 'FormClass' component:
     register_component(CustomerForm, is_a='FormClass', name='myapp.customer')
 
 
-Now any time MyCreateView.as_view is called passing in the Customer content type, CustomerForm class will be used.  If MyCreateView is called with a content type other than Customer, processing will fall back as per standard django create view.  Or could create a generic form catching other content types:
+Could add component registration to your models.py to register at startup.
+
+Now any time MyCreateView.as_view is called passing in the Customer content type, CustomerForm class will be used.  If MyCreateView is called with a content type other than Customer, processing will fall back to standard django generic CBV CreateView.  Or could create a generic form catching other content types:
 
     class GenericForm(forms.Form):
         # some generic form stuff here
@@ -62,7 +64,7 @@ ComponentCreateView also contains a hook for content creation factories. So simi
     register_component(customer_create_factory, is_a='CreateFactory', name='myapp.customer')
 
 
-Could fall back to standard generic django Create CBV processing to create content objects other than 'myapp.customer' type. Or could create a generic factory to catch other content types.
+Could fall back to standard django generic CBV CreateView processing to create content objects other than 'myapp.customer' type. Or could create a generic factory component to catch other content types:
 
     def generic_create_factory(request, content_type, **form_cleaned_data):
         # something like -
@@ -72,7 +74,7 @@ Could fall back to standard generic django Create CBV processing to create conte
 
     register_component(generic_create_factory, is_a='CreateFactory')
 
-If no 'CreateFactory' defined, will fall back to django CBV generic CreateView form_valid() and content object creation.
+If no 'CreateFactory' defined, generic django CBV CreateView form_valid() method will be used to create content object. 
 
 
 ComponentUpdateView
@@ -80,7 +82,7 @@ ComponentUpdateView
 
 ### Update Factories
 
-Similar to Create Factories above, except update factory recieves content object (being updated) as one of the arguments.
+Similar to create factories above with the difference of update factory components receiving content object being updated as one of the arguments.
 
 Example Update Factory for objects of 'myapp.customer' content type:
 
@@ -100,7 +102,7 @@ Generic Update Factory for all other content types:
     register_component(generic_update_factory, is_a='UpdateFactory')
 
 
-If no 'UpdateFactory' defined, will fall back to django CBV generic UpdateView form_valid() and content update.
+If no 'UpdateFactory' defined, generic django CBV UpdateView form_valid() method will be used when updating content.
         
 
 ComponentDeleteView
@@ -108,7 +110,7 @@ ComponentDeleteView
 
 ### Delete Factories
 
-Similar to Update Factories above, delete factory will receive content object being deleted as on of the arguments.
+Similar to update factories above. Delete factories will receive content object being deleted as on of the arguments.
 
 Example Delete Factory for objects of 'myapp.customer' content type:
 
@@ -128,5 +130,5 @@ Generic Delete Factory for all other content types:
     register_component(generic_delete_factory, is_a='DeleteFactory')
  
 
-If no 'DeleteFactory' defined, will fall back to django CBV DeleteView delete().
+If no 'DeleteFactory' defined, generic django CBV DeleteView delete() method will be used.
 
