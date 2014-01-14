@@ -49,7 +49,7 @@ Now any time MyCreateView.as_view is called passing in the Customer content type
 Now MyCreateView will use the GenericForm for all content types other than 'myapp.customer'.
 
 
-### Factories
+### Create Factories
 
 ComponentCreateView also contains a hook for content creation factories. So similar to forms above, could register factory components per content type. 
 
@@ -70,16 +70,63 @@ Could fall back to standard generic django Create CBV processing to create conte
         content_object = model_class(**form_cleaned_data)
         content_object.save()
 
-    register_component(customer_create_factory, is_a='CreateFactory', name='myapp.customer')
+    register_component(generic_create_factory, is_a='CreateFactory')
+
+If no 'CreateFactory' defined, will fall back to django CBV generic CreateView form_valid() and content object creation.
 
 
 ComponentUpdateView
 -------------------
 
-TODO
+### Update Factories
 
+Similar to Create Factories above, except update factory recieves content object (being updated) as one of the arguments.
+
+Example Update Factory for objects of 'myapp.customer' content type:
+
+    def customer_update_factory(request, customer_object, **form_cleaned_data):
+        # update customer object here
+        pass
+
+    register_component(customer_update_factory, is_a='UpdateFactory', name='myapp.customer')
+
+
+Generic Update Factory for all other content types:
+
+    def generic_update_factory(request, content_object, **form_cleaned_data):
+        # generic content_object update processing here
+        pass
+
+    register_component(generic_update_factory, is_a='UpdateFactory')
+
+
+If no 'UpdateFactory' defined, will fall back to django CBV generic UpdateView form_valid() and content update.
+        
 
 ComponentDeleteView
 -------------------
 
-TODO
+### Delete Factories
+
+Similar to Update Factories above, delete factory will receive content object being deleted as on of the arguments.
+
+Example Delete Factory for objects of 'myapp.customer' content type:
+
+    def customer_delete_factory(request, customer_object, **form_cleaned_data):
+        # customer object delete processing here
+        pass
+
+    register_component(customer_delete_factory, is_a='DeleteFactory', name='myapp.customer')
+
+
+Generic Delete Factory for all other content types:
+
+    def generic_delete_factory(request, content_object, **form_cleaned_data):
+        # some generic object delete processing
+        pass
+
+    register_component(generic_delete_factory, is_a='DeleteFactory')
+ 
+
+If no 'DeleteFactory' defined, will fall back to django CBV DeleteView delete().
+
