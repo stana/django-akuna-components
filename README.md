@@ -21,7 +21,7 @@ As with standard django class based views, use as_view() to initialise the view,
     view_func = MyCreateView.as_view(content_type=<ContentType instance>, **kwargs)
     return view_func(request)
 
-(Instead of ContentType instance, could pass content_type_name='<app label>.<lower case model name>' to the as_view func.)
+(Instead of ContentType instance, could pass content_type_name='\<app label\>.\<lower case model name\>' to the as_view func.)
 
 ### Forms
 
@@ -39,7 +39,7 @@ To customise MyCreateView, create and register a 'FormClass' component:
     register_component(CustomerForm, is_a='FormClass', name='myapp.customer')
 
 
-Could add component registration to your models.py to register at startup.
+*(Could add component registration to your models.py to register at startup.)*
 
 Now any time MyCreateView.as_view is called passing in the Customer content type, CustomerForm class will be used.  If MyCreateView is called with a content type other than Customer, processing will fall back to standard django generic CBV CreateView.  Or could create a generic form catching other content types:
 
@@ -67,10 +67,9 @@ ComponentCreateView also contains a hook for content creation factories. So simi
     register_component(customer_create_factory, is_a='CreateFactory', name='myapp.customer')
 
 
-Could fall back to standard django generic CBV CreateView processing to create content objects other than 'myapp.customer' type. Or could create a generic factory component to catch other content types:
+Could fall back to standard django generic CBV CreateView processing to create content objects other than 'myapp.customer' type. Or could create a generic factory component to catch other content types. Something like:
 
     def generic_create_factory(request, content_type, **form_cleaned_data):
-        # something like -
         model_class = content_type.model_class()
         content_object = model_class(**form_cleaned_data)
         content_object.save()
