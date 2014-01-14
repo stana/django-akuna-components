@@ -76,7 +76,7 @@ Could fall back to standard django generic CBV CreateView processing to create c
 
     register_component(generic_create_factory, is_a='CreateFactory')
 
-If no 'CreateFactory' defined, generic django CBV CreateView form_valid() method will be used to create content object. 
+If no 'CreateFactory' defined, processing will fall back to django's generic CreateView form_valid() method.
 
 
 ComponentUpdateView
@@ -119,8 +119,8 @@ Generic Update Factory for all other content types:
     register_component(generic_update_factory, is_a='UpdateFactory')
 
 
-If no 'UpdateFactory' defined, generic django CBV UpdateView form_valid() method will be used when updating content.
-        
+If no 'UpdateFactory' defined, processing will fall back to django's generic UpdateView form_valid() method.
+  
 
 ComponentDeleteView
 -------------------
@@ -162,5 +162,4 @@ Generic Delete Factory for all other content types:
     register_component(generic_delete_factory, is_a='DeleteFactory')
  
 
-If no 'DeleteFactory' defined, generic django CBV DeleteView delete() method will be used.
-
+If no 'DeleteFactory' defined, processing will fall back to django's generic DeleteView delete() method.
