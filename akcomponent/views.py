@@ -1,6 +1,8 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
+#from django.views.generic.edit import FormView, DeleteView
 from django.forms.models import modelform_factory
+from django.forms import ModelForm
 from django.db.models import Model 
 from django.http import HttpResponseRedirect
 
@@ -24,11 +26,20 @@ class ComponentCreateView(CreateView):
     content_type_name = None
     form_class = None
 
+    def get_content_type_name(self):
+        if self.content_type_name:
+            return self.content_type_name
+        if self.content_type:
+            self.__class__.content_type_name = self.content_type.app_label + '.' + self.content_type.model
+            return self.content_type_name
+        return None 
+
     def get_form_class(self):
         if not self.form_class:
-            if self.content_type_name:
+            content_type_name = self.get_content_type_name() 
+            if content_type_name:
                 # content type specific form class hook
-                self.__class__.form_class = query_component('FormClass', name=self.content_type_name)
+                self.__class__.form_class = query_component('FormClass', name=content_type_name)
             if not self.form_class:
                 # generic form class 
                 self.__class__.form_class = query_component('FormClass')
@@ -39,13 +50,23 @@ class ComponentCreateView(CreateView):
 
         return super(ComponentCreateView, self).get_form_class()
 
+    def get_form_kwargs(self):
+        # allow for non ModelForm-s
+        kwargs = super(ComponentCreateView, self).get_form_kwargs()
+        if self.form_class and not issubclass(self.form_class, ModelForm): 
+            if kwargs.has_key('instance'):
+                del(kwargs['instance'])
+        return kwargs
+
     def form_valid(self, form):
+        content_type_name = self.get_content_type_name() 
+
         logger.debug('Form class: %s, ct name: "%s"' % (self.form_class, content_type_name))
 
         create_factory = None
-        if self.content_type_name:
+        if content_type_name:
             # content type specific create factory hook 
-            create_factory = query_component('CreateFactory', name=self.content_type_name)
+            create_factory = query_component('CreateFactory', name=content_type_name)
         if not create_factory:
             # try generic create factory
             create_factory = query_component('CreateFactory')
@@ -73,7 +94,8 @@ class ComponentUpdateView(UpdateView):
         if self.content_type_name:
             return self.content_type_name
         if isinstance(self.content_object, Model):
-            return self.content_object._meta.app_label + '.' + self.content_object._meta.object_name.lower()
+            self.__class__.content_type_name = self.content_object._meta.app_label + '.' + self.content_object._meta.object_name.lower()
+            return self.content_type_name
         return None 
 
     def get_form_class(self):
