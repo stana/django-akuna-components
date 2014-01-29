@@ -1,6 +1,5 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
-#from django.views.generic.edit import FormView, DeleteView
 from django.forms.models import modelform_factory
 from django.forms import ModelForm
 from django.db.models import Model 
@@ -24,30 +23,28 @@ class ComponentCreateView(CreateView):
 
     content_type  = None
     content_type_name = None
-    form_class = None
 
     def get_content_type_name(self):
         if self.content_type_name:
             return self.content_type_name
         if self.content_type:
-            self.__class__.content_type_name = self.content_type.app_label + '.' + self.content_type.model
+            self.content_type_name = self.content_type.app_label + '.' + self.content_type.model
             return self.content_type_name
         return None 
 
     def get_form_class(self):
-        if not self.form_class:
+        if not self.__class__.form_class:
             content_type_name = self.get_content_type_name() 
             if content_type_name:
                 # content type specific form class hook
-                self.__class__.form_class = query_component('FormClass', name=content_type_name)
+                self.form_class = query_component('FormClass', name=content_type_name)
             if not self.form_class:
                 # generic form class 
-                self.__class__.form_class = query_component('FormClass')
+                self.form_class = query_component('FormClass')
             if not self.form_class:
                 model_cls = self.content_type.model_class()
                 if issubclass(model_cls, Model):
-                    self.__class__.form_class = modelform_factory(model_cls)
-
+                    self.form_class = modelform_factory(model_cls)
         return super(ComponentCreateView, self).get_form_class()
 
     def get_form_kwargs(self):
@@ -85,7 +82,6 @@ class ComponentUpdateView(UpdateView):
 
     content_object = None
     content_type_name = None
-    form_class = None
 
     def get_object(self):
         return self.content_object
@@ -94,22 +90,22 @@ class ComponentUpdateView(UpdateView):
         if self.content_type_name:
             return self.content_type_name
         if isinstance(self.content_object, Model):
-            self.__class__.content_type_name = self.content_object._meta.app_label + '.' + self.content_object._meta.object_name.lower()
+            self.content_type_name = self.content_object._meta.app_label + '.' + self.content_object._meta.object_name.lower()
             return self.content_type_name
         return None 
 
     def get_form_class(self):
-        if not self.form_class:
+        if not self.__class__.form_class:
             content_type_name = self.get_content_type_name() 
             if content_type_name:
                 # content type specific form class hook
-                self.__class__.form_class = query_component('FormClass', name=content_type_name)
+                self.form_class = query_component('FormClass', name=content_type_name)
             if not self.form_class:
                 # generic form class 
-                self.__class__.form_class = query_component('FormClass')
+                self.form_class = query_component('FormClass')
             if not self.form_class:
                 if isinstance(self.content_object, Model):
-                    self.__class__.form_class = modelform_factory(self.content_object.__class__)
+                    self.form_class = modelform_factory(self.content_object.__class__)
 
         return super(ComponentUpdateView, self).get_form_class()
 
